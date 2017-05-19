@@ -22,6 +22,8 @@ const svg = scatter.plot(data, x, y[, options])
 
 ## Options
 
+The `options` object can be used to set the following:
+
 * `width`
 * `height`
 * `fitLine` whether to draw the line of best fit (default: `false`)
