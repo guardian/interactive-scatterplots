@@ -9,7 +9,9 @@ npm install guardian/interactive-scatterplots
 ## API
 
 ```
-scatter.plot(data, x, y[, options])
+import scatter from 'interactive-scatterplots'
+
+const svg = scatter.plot(data, x, y[, options])
 ```
 
 ## Parameters
@@ -20,4 +22,7 @@ scatter.plot(data, x, y[, options])
 
 ## Options
 
-tbc
+* `width`
+* `height`
+* `fitLine` whether to draw the line of best fit (default: `false`)
+* more tbc ...
