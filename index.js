@@ -1,7 +1,5 @@
-import fs from 'fs'
 import * as d3 from 'd3'
 import D3Node from 'd3-node'
-import sync from 'csv-parse/lib/sync'
 
 const CIRCLE_SIZE = 6
 
