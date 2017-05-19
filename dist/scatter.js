@@ -65,6 +65,7 @@ const plot = (input, x, y,
 	xStops = quarterStops,
 	yStops = quarterStops,
 	xFormat = d => parseInt(d*100) + '%',
+	yStopsInset = false,
 	xLabel = 'x axis',
 	yFormat = d => parseInt(d*100) + '%',
 	yLabel = 'y axis',
@@ -130,9 +131,9 @@ const plot = (input, x, y,
 
 	yLines
 		.append('text')
-		.attr('dx', margin - 4)
-		.attr('dy', 4)
-		.attr('class', 'ge-axis-label--y')
+		.attr('dx', yStopsInset ? margin : margin - 4)
+		.attr('dy', yStopsInset ? -4 : Math.ceil(labelSize/3))
+		.attr('class', 'ge-axis__label ge-axis__label--y' + (yStopsInset ? 'ge-axis__label--y--inset' : ''))
 		.style('font-size', labelSize + 'px')
 		.text(yFormat);
 
@@ -156,7 +157,7 @@ const plot = (input, x, y,
 		.append('text')
 		.attr('dx', 0)
 		.attr('dy', height - margin + labelSize)
-		.attr('class', 'ge-axis-label--x')
+		.attr('class', 'ge-axis__label ' + 'ge-axis__label--x')
 		.style('font-size', labelSize + 'px')
 		.text(xFormat);
 
