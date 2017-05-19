@@ -175,13 +175,17 @@ const plot = (input, x, y,
 		})
 		.attr('id', getId)
 
-	const lineOf = svg
-		.append('line')
-		.attr('x1', xScale(p1[0]))
-		.attr('y1', yScale(p1[1]))
-		.attr('x2', xScale(p2[0]))
-		.attr('y2', yScale(p2[1]))
-		.attr('class', fitLine ? 'ge-best-fit' : 'ge-best-fit ge-hidden')
+	if(fitLine){
+
+		const lineOf = svg
+			.append('line')
+			.attr('x1', xScale(p1[0]))
+			.attr('y1', yScale(p1[1]))
+			.attr('x2', xScale(p2[0]))
+			.attr('y2', yScale(p2[1]))
+			.attr('class', 'ge-best-fit')
+
+	}
 
 	return d3n.svgString()
 
