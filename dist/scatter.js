@@ -74,7 +74,7 @@ const plot = (input, x, y,
 	id = 'name',
 	width = 400,
 	height = 400,
-	margin = 32,
+	padding = 32,
 	labelSize = 13
 
 } = {}) => {
@@ -94,13 +94,15 @@ const plot = (input, x, y,
 	const xStopsArr = (typeof xStops === 'function') ? xStops(xExtentArr) : xStops;
 	const yStopsArr = (typeof yStops === 'function') ? yStops(yExtentArr) : yStops;
 
+	const paddingBottom = padding + labelSize + 4;
+
 	const xScale = d3.scaleLinear()
 		.domain(xExtentArr)
-		.range([margin, width-margin]);
+		.range([padding, width-padding]);
 
 	const yScale = d3.scaleLinear()
 		.domain(yExtentArr)
-		.range([height-margin, margin]);
+		.range([height-paddingBottom, padding]);
 
 	const rScale = d3.scaleSqrt()
 		.domain([0, d3.max(data.map(getR))])
@@ -123,15 +125,15 @@ const plot = (input, x, y,
 
 	yLines
 		.append('line')
-		.attr('x1', margin)
-		.attr('x2', width-margin)
+		.attr('x1', padding)
+		.attr('x2', width-padding)
 		.attr('y1', 0)
 		.attr('y2', 0)
 		.attr('class', 'ge-gridline');
 
 	yLines
 		.append('text')
-		.attr('dx', yStopsInset ? margin : margin - 4)
+		.attr('dx', yStopsInset ? padding : padding - 4)
 		.attr('dy', yStopsInset ? -4 : Math.ceil(labelSize/3))
 		.attr('class', 'ge-axis__label ge-axis__label--y' + (yStopsInset ? 'ge-axis__label--y--inset' : ''))
 		.style('font-size', labelSize + 'px')
@@ -149,14 +151,14 @@ const plot = (input, x, y,
 		.append('line')
 		.attr('x1', 0)
 		.attr('x2', 0)
-		.attr('y1', margin)
-		.attr('y2', height-margin)
+		.attr('y1', padding)
+		.attr('y2', height-paddingBottom)
 		.attr('class', 'ge-gridline');
 
 	xLines
 		.append('text')
 		.attr('dx', 0)
-		.attr('dy', height - margin + labelSize)
+		.attr('dy', height - paddingBottom + labelSize)
 		.attr('class', 'ge-axis__label ' + 'ge-axis__label--x')
 		.style('font-size', labelSize + 'px')
 		.text(xFormat);
