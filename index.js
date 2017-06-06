@@ -34,10 +34,13 @@ const uniformSize = radius => Math.PI // or literally any other number
 const round = (n, down = true) => {
 	if(n === 0) return 0
 
-	const oom = Math.floor(Math.log(n)/Math.LN10 + 0.00000001) // floating point bs
+	const a = Math.abs(n)
+	const oom = Math.floor(Math.log(a)/Math.LN10 + 0.00000001) // floating point bs
 
-	return down ? Math.floor(n/Math.pow(10, oom))*Math.pow(10, oom) :
-		Math.ceil(n/Math.pow(10, oom))*Math.pow(10, oom)
+	const r = down ? Math.floor(a/Math.pow(10, oom))*Math.pow(10, oom) :
+		Math.ceil(a/Math.pow(10, oom))*Math.pow(10, oom)
+
+	return n < 0 ? -1*r : r
 
 }
 
