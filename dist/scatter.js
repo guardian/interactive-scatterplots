@@ -211,7 +211,8 @@ const plot = (input, x, y,
 			.enter()
 			.append('tspan')
 			.attr('dx', 0)
-			.attr('dy', (d, i) => i*labelSize);
+			.attr('dy', (d, i) => i*labelSize)
+			.text(line => line);
 	}
 
 	return d3n.svgString()
