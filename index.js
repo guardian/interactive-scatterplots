@@ -197,7 +197,7 @@ const plot = (input, x, y,
 		const titleText = svg
 			.append('text')
 			.attr('x', width/2)
-			.attr('y', padding - 8)
+			.attr('y', padding - labelSize - 8)
 			.attr('class', classTitle)
 
 		const lines = title.split('\n')
