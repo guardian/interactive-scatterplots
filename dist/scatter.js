@@ -197,12 +197,21 @@ const plot = (input, x, y,
 	}
 
 	if(title !== '') {
-		svg
+
+		const titleText = svg
 			.append('text')
-			.attr('dx', width/2)
-			.attr('dy', padding - 8)
-			.attr('class', classTitle)
-			.text(title);
+			.attr('x', width/2)
+			.attr('y', padding - 8)
+			.attr('class', classTitle);
+
+		const lines = title.split('\n');
+		const spans = titleText
+			.selectAll('tspan')
+			.data(lines)
+			.enter()
+			.append('tspan')
+			.attr('dx', 0)
+			.attr('dy', (d, i) => i*labelSize);
 	}
 
 	return d3n.svgString()
