@@ -71,6 +71,8 @@ const plot = (input, x, y,
 	width = 400,
 	height = 400,
 	padding = 32,
+	title = '',
+	classTitle = '',
 	labelSize = 13
 
 } = {}) => {
@@ -188,6 +190,15 @@ const plot = (input, x, y,
 			.attr('y2', yScale(p2[1]))
 			.attr('class', 'ge-best-fit')
 
+	}
+
+	if(title !== '') {
+		svg
+			.append('text')
+			.attr('dx', width/2)
+			.attr('dy', padding - 8)
+			.attr('class', classTitle)
+			.text(title)
 	}
 
 	return d3n.svgString()
