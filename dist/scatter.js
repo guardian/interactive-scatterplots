@@ -207,10 +207,10 @@ const plot = (input, x, y,
 		const lines = title.split('\n');
 		const spans = titleText
 			.selectAll('tspan')
-			.data(lines)
+			.data(lines.map(l => l.trim()))
 			.enter()
 			.append('tspan')
-			.attr('dx', 0)
+			.attr('x', width/2)
 			.attr('dy', (d, i) => i*labelSize)
 			.text(line => line);
 	}
