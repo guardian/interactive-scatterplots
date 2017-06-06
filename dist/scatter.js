@@ -41,7 +41,7 @@ const round = (n, down = true) => {
 	const a = Math.abs(n);
 	const oom = Math.floor(Math.log(a)/Math.LN10 + 0.00000001); // floating point bs
 
-	const r = down ? Math.floor(a/Math.pow(10, oom))*Math.pow(10, oom) :
+	const r = (down && n > 0 || !down && n < 0) ? Math.floor(a/Math.pow(10, oom))*Math.pow(10, oom) :
 		Math.ceil(a/Math.pow(10, oom))*Math.pow(10, oom);
 
 	return n < 0 ? -1*r : r
