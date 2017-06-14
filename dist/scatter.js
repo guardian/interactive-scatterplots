@@ -2,7 +2,6 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var d3 = require('d3');
 var D3Node = _interopDefault(require('d3-node'));
 
 const CIRCLE_SIZE = 6;
@@ -49,12 +48,12 @@ const round = (n, down = true) => {
 };
 
 const niceExtent = data => {
-	const [min$$1, max$$1] = d3.extent(data);
-	return [round(min$$1), round(max$$1, false)]
+	const [min, max] = d3.extent(data);
+	return [round(min), round(max, false)]
 };
 
-const quarterStops = extent$$1 => {
-	return [0.25, 0.5, 0.75].map(i => extent$$1[0] + i*(extent$$1[1]-extent$$1[0]))
+const quarterStops = extent => {
+	return [0.25, 0.5, 0.75].map(i => extent[0] + i*(extent[1]-extent[0]))
 };
 
 const plot = (input, x, y,
@@ -85,6 +84,7 @@ const plot = (input, x, y,
 } = {}) => {
 
 	const d3n = new D3Node();
+	const d3 = d3n.d3;
 	const svg = d3n.createSVG(width, height);
 
 	const getX = (typeof x === 'function') ? x : row => parseFloat(row[x]);

@@ -1,4 +1,3 @@
-import * as d3 from 'd3'
 import D3Node from 'd3-node'
 
 const CIRCLE_SIZE = 6
@@ -81,6 +80,7 @@ const plot = (input, x, y,
 } = {}) => {
 
 	const d3n = new D3Node()
+	const d3 = d3n.d3
 	const svg = d3n.createSVG(width, height)
 
 	const getX = (typeof x === 'function') ? x : row => parseFloat(row[x])
