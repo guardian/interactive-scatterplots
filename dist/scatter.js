@@ -78,12 +78,58 @@ const plot = (input, x, y,
 	padding = 32,
 	title = '',
 	classTitle = '',
-	labelSize = 13
+	labelSize = 13,
+	prefix = 'sp',
+	defaultStyles = true
 
 } = {}) => {
 
 	const dom = new jsdom.JSDOM(`<svg width='${width}' height='${height}'></svg>`);
 	const svg = d3.select(dom.window.document.querySelector('svg'));
+
+	if(defaultStyles) {
+		svg.append('style')
+			.text(`
+
+				.${prefix}-title {
+					text-anchor: middle;
+				}
+
+				.${prefix}-circle {
+					fill: #bdbdbd;
+					fill-opacity: 0.5;
+				}
+
+				.${prefix}-best-fit {
+					stroke: black;
+					stroke-width: 1;
+				}
+
+				.${prefix}-axis {
+					stroke: #777;
+					stroke-width: 1;
+				}
+
+				.${prefix}-gridline {
+					stroke: #bdbdbd;
+					stroke-width: 1;
+					stroke-dasharray: 1,1;
+				}
+
+				.${prefix}-axis__label--x {
+					text-anchor: middle;
+				}
+
+				.${prefix}-axis__label--y {
+					text-anchor: end;
+				}
+
+				.${prefix}-axis__label--y.${prefix}-axis__label--y--inset {
+					text-anchor: start;
+				}
+
+		`);
+	}
 
 	const getX = (typeof x === 'function') ? x : row => parseFloat(row[x]);
 	const getY = (typeof y === 'function') ? y : row => parseFloat(row[y]);
@@ -117,10 +163,10 @@ const plot = (input, x, y,
 
 	const axisGroup = svg
 		.append('g')
-		.attr('class', 'ge-axes');
+		.attr('class', `${prefix}-axes`);
 
 	const yLines = axisGroup
-		.selectAll('ge-line--y')
+		.selectAll(`${prefix}-line--y`)
 		.data(yStopsArr)
 		.enter()
 		.append('g')
@@ -132,18 +178,18 @@ const plot = (input, x, y,
 		.attr('x2', width-padding)
 		.attr('y1', 0)
 		.attr('y2', 0)
-		.attr('class', 'ge-gridline');
+		.attr('class', `${prefix}-gridline`);
 
 	yLines
 		.append('text')
 		.attr('dx', yStopsInset ? padding : padding - 4)
 		.attr('dy', yStopsInset ? -4 : Math.ceil(labelSize/3))
-		.attr('class', 'ge-axis__label ge-axis__label--y' + (yStopsInset ? 'ge-axis__label--y--inset' : ''))
+		.attr('class', `${prefix}-axis__label ${prefix}-axis__label--y` + (yStopsInset ? `${prefix}-axis__label--y--inset` : ''))
 		.style('font-size', labelSize + 'px')
 		.text(yFormat);
 
 	const xLines = axisGroup
-		.selectAll('ge-line--x')
+		.selectAll(`${prefix}-line--x`)
 		.data(xStopsArr)
 		.enter()
 		.append('g')
@@ -156,23 +202,23 @@ const plot = (input, x, y,
 		.attr('x2', 0)
 		.attr('y1', padding)
 		.attr('y2', height-paddingBottom)
-		.attr('class', 'ge-gridline');
+		.attr('class', `${prefix}-gridline`);
 
 	xLines
 		.append('text')
 		.attr('dx', 0)
 		.attr('dy', height - paddingBottom + labelSize)
-		.attr('class', 'ge-axis__label ' + 'ge-axis__label--x')
+		.attr('class', `${prefix}-axis__label ` + `${prefix}-axis__label--x`)
 		.style('font-size', labelSize + 'px')
 		.text(xFormat);
 
 
 	const circleGroup = svg
 		.append('g')
-		.attr('class', 'ge-circles');
+		.attr('class', `${prefix}-circles`);
 
 	const circles = circleGroup
-		.selectAll('.ge-circle')
+		.selectAll(`.ge-circle`)
 		.data(data)
 		.enter()
 		.append('circle')
@@ -180,7 +226,7 @@ const plot = (input, x, y,
 		.attr('cy', d => yScale(getY(d)))
 		.attr('r', d => rScale(getR(d)))
 		.attr('class', d => {
-			const base = 'ge-circle';
+			const base = `${prefix}-circle`;
 			return `${base} ${ classCircles(d) }`
 		})
 		.attr('id', getId);
@@ -193,7 +239,7 @@ const plot = (input, x, y,
 			.attr('y1', yScale(p1[1]))
 			.attr('x2', xScale(p2[0]))
 			.attr('y2', yScale(p2[1]))
-			.attr('class', 'ge-best-fit');
+			.attr('class', `${prefix}-best-fit`);
 
 	}
 
