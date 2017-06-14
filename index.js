@@ -1,4 +1,5 @@
-import D3Node from 'd3-node'
+import * as d3 from 'd3'
+import { JSDOM } from 'jsdom'
 
 const CIRCLE_SIZE = 6
 
@@ -79,9 +80,8 @@ const plot = (input, x, y,
 
 } = {}) => {
 
-	const d3n = new D3Node()
-	const d3 = d3n.d3
-	const svg = d3n.createSVG(width, height)
+	const dom = new JSDOM(`<svg width='${width}' height='${height}'></svg>`)
+	const svg = d3.select(dom.window.document.querySelector('svg'))
 
 	const getX = (typeof x === 'function') ? x : row => parseFloat(row[x])
 	const getY = (typeof y === 'function') ? y : row => parseFloat(row[y])
