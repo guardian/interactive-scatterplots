@@ -216,7 +216,7 @@ const plot = (input, x, y,
 			.text(line => line);
 	}
 
-	return d3n.svgString()
+	return dom.window.document.querySelector('svg').outerHTML
 
 };
 
