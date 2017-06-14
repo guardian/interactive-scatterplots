@@ -249,7 +249,7 @@ const plot = (input, x, y,
 			.append('text')
 			.attr('x', width/2)
 			.attr('y', padding - labelSize - 8)
-			.attr('class', classTitle);
+			.attr('class', `${prefix}-title ${classTitle}`);
 
 		const lines = title.split('\n');
 		const spans = titleText
