@@ -28,10 +28,11 @@ The `options` object can be used to set the following:
 * `height`
 * `fitLine` whether to draw the line of best fit (default: `false`)
 * `r` a constant radius for each circle
+* `rScale` a column name string or function to dynamically scale circle radii between 0 and `r` instead
 * `xExtent`/`yExtent` the extent of the chart in either dimension
 * `xStops`/`yStops` the values at which to draw grid lines in the background
 * `classCircles` a function specifying which classes to append to each circle
-* `styleCircles` an object mapping CSS properties to strings or functions to dynamically style circles based on data
+* `styleCircles` an object mapping CSS properties to functions (to dynamically style circles based on data)
 * `title` the chart's title
 * `labelSize` the font size to use for axis labels
 * `padding` padding around the chart's grid to fit axis labels and chart title
