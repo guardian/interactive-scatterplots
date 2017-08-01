@@ -14,6 +14,14 @@ import scatter from 'interactive-scatterplots'
 const svg = scatter.plot(data, x, y[, options])
 ```
 
+## Default styles
+
+These can be found in `dist/scatter.css`. To import them in Sass:
+
+```
+@import 'node_modules/interactive-scatterplots/dist/scatter';
+```
+
 ## Parameters
 
 * `data` an array of rows
