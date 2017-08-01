@@ -35,7 +35,7 @@ The `options` object can be used to set the following:
 * `rScale` a column name string or function to dynamically scale circle radii between 0 and `r` instead
 * `xExtent`/`yExtent` the extent of the chart in either dimension
 * `xStops`/`yStops` the values at which to draw grid lines in the background
-* `classCircles` a function specifying which classes to append to each circle
+* `classCircles` a function specifying which classes to give each circle
 * `styleCircles` an object mapping CSS properties to functions (to dynamically style circles based on data)
 
 * ... full docs to follow
