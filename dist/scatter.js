@@ -79,7 +79,8 @@ const plot = (input, x, y,
 	padding = 32,
 	title = '',
 	classTitle = '',
-	labelSize = 13
+	labelSize = 13,
+	label = () => null
 
 } = {}) => {
 
@@ -90,7 +91,7 @@ const plot = (input, x, y,
 	const getY = (typeof y === 'function') ? y : row => parseFloat(row[y]);
 	const getR = (typeof rScale === 'function') ? rScale : row => parseFloat(row[rScale]);
 	const getId = (typeof id === 'function') ? id : row => row[id];
-	const getLabel = label ? label : () => null;
+	const getLabel = label;
 
 	const getCircleClass = (typeof classCircles === 'function') ? classCircles : row => classCircles;
 
