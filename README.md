@@ -22,7 +22,7 @@ const svg = scatter.plot(data, x, y[, options])
 
 ## Options
 
-The `options` object can be used to set the following:
+The `options` object can be used to set a number of options. Wherever functions are passed in, they take as their parameter the current data row.
 
 * `width`
 * `height`
@@ -33,8 +33,8 @@ The `options` object can be used to set the following:
 * `rScale` a column name string or function to dynamically scale circle radii between 0 and `r` instead
 * `xExtent`/`yExtent` the extent of the chart in either dimension
 * `xStops`/`yStops` the values at which to draw grid lines in the background
-* `classCircles` a function specifying which classes to give each circle
-* `styleCircles` a function returning an object with CSS properties (to dynamically style circles based on data)
+* `classCircles` a function returning a class string for each circle
+* `styleCircles` a function returning a CSS properties object for each circle
 * `label` a function returning a circle's label string, or `null` if it shouldn't be labelled
 * ... full docs to follow
 
