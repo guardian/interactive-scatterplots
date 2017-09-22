@@ -193,9 +193,12 @@ const plot = (input, x, y,
 		.each(function(d) {
 			const circle = d3.select(this);
 			const stylesObject = styles(d);
-			Object.keys(stylesObject).forEach(k => {
-				circle.style(k, stylesObject[k]);
-			});
+
+			if(typeof stylesObject === 'object') {
+				Object.keys(stylesObject).forEach(k => {
+					circle.style(k, stylesObject[k]);
+				});
+			}
 		});
 
 	const labelLayer = svg
