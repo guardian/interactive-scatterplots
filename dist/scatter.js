@@ -72,7 +72,7 @@ const plot = (input, x, y,
 	yLabel = 'y axis',
 	fitLine = false,
 	classCircles = uniformColour,
-	styleCircles = {},
+	styleCircles = () => {},
 	id = 'name',
 	width = 400,
 	height = 400,
@@ -177,7 +177,7 @@ const plot = (input, x, y,
 		.append('g')
 		.attr('class', `scpl-circles`);
 
-	const gs = circleLayer
+	const circles = circleLayer
 		.selectAll(`.scpl-circle`)
 		.data(data)
 		.enter()
@@ -189,7 +189,14 @@ const plot = (input, x, y,
 			const base = `scpl-circle`;
 			return `${base} ${ getCircleClass(d) }`
 		})
-		.attr('id', getId);
+		.attr('id', getId)
+		.each(function(d) {
+			const circle = d3.select(this);
+			const stylesObject = styles(d);
+			Object.keys(stylesObject).forEach(k => {
+				circle.style(k, stylesObject[k]);
+			});
+		});
 
 	const labelLayer = svg
 		.append('g')
@@ -204,10 +211,6 @@ const plot = (input, x, y,
 		.attr('y', d => yScale(getY(d)) -radiusScale(getR(d)) - 4)
 		.attr('class', 'scpl-label')
 		.text(d => getLabel(d));
-
-	Object.keys(styles).forEach(k => {
-		circles.style(k, styles[k]);
-	});
 
 	if(fitLine){
 
