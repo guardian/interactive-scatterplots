@@ -35,6 +35,7 @@ The `options` object can be used to set the following:
 * `xStops`/`yStops` the values at which to draw grid lines in the background
 * `classCircles` a function specifying which classes to give each circle
 * `styleCircles` a function returning an object with CSS properties (to dynamically style circles based on data)
+* `label` a function returning a circle's label string, or `null` if it shouldn't be labelled
 * ... full docs to follow
 
 ## Default styles
