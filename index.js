@@ -176,17 +176,12 @@ const plot = (input, x, y,
 		.attr('class', `scpl-circles`)
 
 	const gs = circleLayer
-		.selectAll(`.scpl-g`)
+		.selectAll(`.scpl-circle`)
 		.data(data)
 		.enter()
-		.append('g')
-		.attr('transform', d => `translate(${xScale(getX(d))}, ${yScale(getY(d))})`)
-		.attr('class', 'scpl-g')
-
-	const circles = gs
 		.append('circle')
-		.attr('cx', 0)
-		.attr('cy', 0)
+		.attr('cx', d => xScale(getX(d)))
+		.attr('cy', d => yScale(getY(d)))
 		.attr('r', d => radiusScale(getR(d)))
 		.attr('class', d => {
 			const base = `scpl-circle`
@@ -194,11 +189,17 @@ const plot = (input, x, y,
 		})
 		.attr('id', getId)
 
-	const labels = gs
-		.filter( d => getLabel(d) !== null)
+	const labelLayer = svg
+		.append('g')
+		.attr('class', 'scpl-labels')
+
+	const labels = labelLayer
+		.selectAll('.scpl-label')
+		.data(data.filter(d => label(d) !== null))
+		.enter()
 		.append('text')
-		.attr('x', 0)
-		.attr('y', d => -radiusScale(getR(d)) - 4)
+		.attr('x', d => xScale(getX(d)))
+		.attr('y', d => yScale(getY(d)) -radiusScale(getR(d)) - 4)
 		.attr('class', 'scpl-label')
 		.text(d => getLabel(d))
 
