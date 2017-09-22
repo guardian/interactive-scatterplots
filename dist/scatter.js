@@ -86,54 +86,11 @@ const plot = (input, x, y,
 	const dom = new jsdom.JSDOM(`<svg class='scpl-plot' width='${width}' height='${height}'></svg>`);
 	const svg = d3.select(dom.window.document.querySelector('svg'));
 
-	// if(defaultStyles) {
-	// 	svg.append('style')
-	// 		.text(`
-
-	// 			.scpl-title {
-	// 				text-anchor: middle;
-	// 			}
-
-	// 			.scpl-circle {
-	// 				fill: #bdbdbd;
-	// 				fill-opacity: 0.5;
-	// 			}
-
-	// 			.scpl-best-fit {
-	// 				stroke: black;
-	// 				stroke-width: 1;
-	// 			}
-
-	// 			.scpl-axis {
-	// 				stroke: #777;
-	// 				stroke-width: 1;
-	// 			}
-
-	// 			.scpl-gridline {
-	// 				stroke: #bdbdbd;
-	// 				stroke-width: 1;
-	// 				stroke-dasharray: 1,1;
-	// 			}
-
-	// 			.scpl-axis__label--x {
-	// 				text-anchor: middle;
-	// 			}
-
-	// 			.scpl-axis__label--y {
-	// 				text-anchor: end;
-	// 			}
-
-	// 			.scpl-axis__label--y.scpl-axis__label--y--inset {
-	// 				text-anchor: start;
-	// 			}
-
-	// 	`)
-	// }
-
 	const getX = (typeof x === 'function') ? x : row => parseFloat(row[x]);
 	const getY = (typeof y === 'function') ? y : row => parseFloat(row[y]);
 	const getR = (typeof rScale === 'function') ? rScale : row => parseFloat(row[rScale]);
 	const getId = (typeof id === 'function') ? id : row => row[id];
+	const getLabel = label ? label : () => null;
 
 	const getCircleClass = (typeof classCircles === 'function') ? classCircles : row => classCircles;
 
@@ -215,24 +172,36 @@ const plot = (input, x, y,
 		.style('font-size', labelSize + 'px')
 		.text(xFormat);
 
-
-	const circleGroup = svg
+	const circleLayer = svg
 		.append('g')
 		.attr('class', `scpl-circles`);
 
-	const circles = circleGroup
-		.selectAll(`.ge-circle`)
+	const gs = circleLayer
+		.selectAll(`.scpl-g`)
 		.data(data)
 		.enter()
+		.append('g')
+		.attr('transform', d => `translate(${xScale(getX(d))}, ${yScale(getY(d))})`)
+		.attr('class', 'scpl-g');
+
+	const circles = gs
 		.append('circle')
-		.attr('cx', d => xScale(getX(d)))
-		.attr('cy', d => yScale(getY(d)))
+		.attr('cx', 0)
+		.attr('cy', 0)
 		.attr('r', d => radiusScale(getR(d)))
 		.attr('class', d => {
 			const base = `scpl-circle`;
 			return `${base} ${ getCircleClass(d) }`
 		})
 		.attr('id', getId);
+
+	const labels = gs
+		.filter( d => getLabel(d) !== null)
+		.append('text')
+		.attr('x', 0)
+		.attr('y', d => -radiusScale(getR(d)) - 4)
+		.attr('class', 'scpl-label')
+		.text(d => getLabel(d));
 
 	Object.keys(styles).forEach(k => {
 		circles.style(k, styles[k]);

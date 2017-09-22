@@ -5,6 +5,9 @@
   fill: #bdbdbd;
   fill-opacity: 0.5; }
 
+.scpl-label {
+  text-anchor: middle; }
+
 .scpl-best-fit {
   stroke: black;
   stroke-width: 1; }
