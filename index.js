@@ -187,7 +187,7 @@ const plot = (input, x, y,
 			const base = `scpl-circle`
 			return `${base} ${ getCircleClass(d) }`
 		})
-		.attr('id', getId)
+		.attr('data-id', getId)
 		.each(function(d) {
 			const circle = d3.select(this)
 			const stylesObject = styles(d)
@@ -211,6 +211,7 @@ const plot = (input, x, y,
 		.attr('x', d => xScale(getX(d)))
 		.attr('y', d => yScale(getY(d)) -radiusScale(getR(d)) - 4)
 		.attr('class', 'scpl-label')
+		.attr('data-id', getId)
 		.text(d => getLabel(d))
 
 	if(fitLine){
