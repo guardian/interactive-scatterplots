@@ -126,25 +126,34 @@ const plot = (input, x, y,
 		.append('g')
 		.attr('class', `scpl-axes`);
 
+	const circleLayer = svg
+		.append('g')
+		.attr('class', `scpl-circles`);
+
+	// Put axis labels on top of circles (for inset y labels)
+
+	const axisLabelGroup = svg
+		.append('g')
+		.attr('class', `scpl-axis__labels`);
+
 	const yLines = axisGroup
 		.selectAll(`scpl-line--y`)
 		.data(yStopsArr)
 		.enter()
-		.append('g')
-		.attr('transform', d => `translate(0, ${yScale(d)})`);
-
-	yLines
 		.append('line')
 		.attr('x1', padding)
 		.attr('x2', width-padding)
-		.attr('y1', 0)
-		.attr('y2', 0)
-		.attr('class', `scpl-gridline`);
+		.attr('y1', yScale)
+		.attr('y2', yScale)
+		.attr('class', `scpl-gridline scpl-line--y`);
 
-	yLines
+	const yLineLabels = axisLabelGroup
+		.selectAll('scpl-axis__label scpl-axis__label--y')
+		.data(yStopsArr)
+		.enter()
 		.append('text')
-		.attr('dx', yStopsInset ? padding : padding - 4)
-		.attr('dy', yStopsInset ? -4 : Math.ceil(labelSize/3))
+		.attr('x', yStopsInset ? padding : padding - 4)
+		.attr('y', d => yStopsInset ? yScale(d) - 4 : yScale(d) + Math.ceil(labelSize/3))
 		.attr('class', `scpl-axis__label scpl-axis__label--y` + (yStopsInset ? `scpl-axis__label--y--inset` : ''))
 		.style('font-size', labelSize + 'px')
 		.text(yFormat);
@@ -153,29 +162,23 @@ const plot = (input, x, y,
 		.selectAll(`scpl-line--x`)
 		.data(xStopsArr)
 		.enter()
-		.append('g')
-		.attr('transform', d => `translate(${xScale(d)}, 0)`);
-
-
-	xLines
 		.append('line')
-		.attr('x1', 0)
-		.attr('x2', 0)
+		.attr('x1', xScale)
+		.attr('x2', xScale)
 		.attr('y1', padding)
 		.attr('y2', height-paddingBottom)
-		.attr('class', `scpl-gridline`);
+		.attr('class', `scpl-gridline scpl-line--x`);
 
-	xLines
+	const xLineLabels = axisLabelGroup
+		.selectAll('scpl-axis__label scpl-axis__label--x')
+		.data(xStopsArr)
+		.enter()
 		.append('text')
-		.attr('dx', 0)
-		.attr('dy', height - paddingBottom + labelSize)
+		.attr('x', xScale)
+		.attr('y', height - paddingBottom + labelSize)
 		.attr('class', `scpl-axis__label ` + `scpl-axis__label--x`)
 		.style('font-size', labelSize + 'px')
 		.text(xFormat);
-
-	const circleLayer = svg
-		.append('g')
-		.attr('class', `scpl-circles`);
 
 	const circles = circleLayer
 		.selectAll(`.scpl-circle`)
