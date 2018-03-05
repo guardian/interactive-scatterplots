@@ -28,11 +28,15 @@ const pearson = (xVals, yVals) => {
 };
 
 const leastSquares = (xVals, yVals) => {
-	return x => {
-		const b = pearson(xVals, yVals)*sd(yVals)/sd(xVals);
-		const a = mean(yVals) - b*mean(xVals);
-		return a + b*x
+	
+	const b = pearson(xVals, yVals)*sd(yVals)/sd(xVals);
+	const a = mean(yVals) - b*mean(xVals);
+
+	return {
+		forward : x => a + b*x,  
+		invert : y => (y - a)/b
 	}
+	
 };
 
 const uniformColour = row => '';
@@ -76,7 +80,7 @@ const niceExtent = data => {
 };
 
 const quarterStops = extent => {
-	return [0.25, 0.5, 0.75].map(i => extent[0] + i*(extent[1]-extent[0]))
+	return [0.25, 0.5, 0.75].map(i => round(extent[0] + i*(extent[1]-extent[0]), 5))
 };
 
 const plot = (input, x, y,
@@ -101,7 +105,7 @@ const plot = (input, x, y,
 	id = 'name',
 	width = 400,
 	height = 400,
-	padding = 40,
+	padding = { top : 40, right : 40, bottom : 40, left : 40 },
 	title = '',
 	classTitle = '',
 	labelSize = 13,
@@ -132,11 +136,11 @@ const plot = (input, x, y,
 
 	const xScale = d3.scaleLinear()
 		.domain(xExtentArr)
-		.range([padding, width-padding]);
+		.range([padding.left, width-padding.right]);
 
 	const yScale = d3.scaleLinear()
 		.domain(yExtentArr)
-		.range([height-padding, padding]);
+		.range([height-padding.bottom, padding.top]);
 
 	const radiusScale = d3.scaleSqrt()
 		.domain([0, d3.max(data.map(getR))])
@@ -161,8 +165,8 @@ const plot = (input, x, y,
 		.data(yStopsArr)
 		.enter()
 		.append('line')
-		.attr('x1', padding)
-		.attr('x2', width-padding)
+		.attr('x1', padding.left)
+		.attr('x2', width-padding.right)
 		.attr('y1', yScale)
 		.attr('y2', yScale)
 		.attr('class', `scpl-gridline scpl-line--y`);
@@ -172,7 +176,7 @@ const plot = (input, x, y,
 		.data(yStopsArr)
 		.enter()
 		.append('text')
-		.attr('x', yStopsInset ? padding : padding - 4)
+		.attr('x', yStopsInset ? padding.left : padding.left - 4)
 		.attr('y', d => yStopsInset ? yScale(d) - 4 : yScale(d) + Math.ceil(labelSize/3))
 		.attr('class', `scpl-axis__label scpl-axis__label--y` + (yStopsInset ? `scpl-axis__label--y--inset` : ''))
 		.style('font-size', labelSize + 'px')
@@ -181,10 +185,10 @@ const plot = (input, x, y,
 	const yAxisTitle = axisLabelGroup
 		.append('text')
 		.text(yLabel)
-		.attr('x', yLabelRight ? width - padding + labelSize*1.8 : padding - labelSize*1.8)
-		.attr('y', height/2)
+		.attr('x', yLabelRight ? width - 20 : 20 )
+		.attr('y', padding.top + (height - padding.top - padding.bottom)/2)
 		.attr('class', 'scpl-axis__title scpl-axis__title--y')
-		.attr('transform', `rotate(270, ${ yLabelRight ? width - padding + labelSize*1.8 : padding - labelSize*1.8 }, ${ width/2 })`);
+		.attr('transform', `rotate(270, ${ yLabelRight ? width - 20 : 20 }, ${ padding.top + (height - padding.top - padding.bottom)/2 })`);
 
 	const xLines = axisGroup
 		.selectAll(`scpl-line--x`)
@@ -193,8 +197,8 @@ const plot = (input, x, y,
 		.append('line')
 		.attr('x1', xScale)
 		.attr('x2', xScale)
-		.attr('y1', padding)
-		.attr('y2', height-padding)
+		.attr('y1', padding.top)
+		.attr('y2', height-padding.bottom)
 		.attr('class', `scpl-gridline scpl-line--x`);
 
 	const xLineLabels = axisLabelGroup
@@ -203,7 +207,7 @@ const plot = (input, x, y,
 		.enter()
 		.append('text')
 		.attr('x', xScale)
-		.attr('y', height - padding + labelSize)
+		.attr('y', height - padding.bottom + labelSize)
 		.attr('class', `scpl-axis__label ` + `scpl-axis__label--x`)
 		.style('font-size', labelSize + 'px')
 		.text(xFormat);
@@ -212,7 +216,7 @@ const plot = (input, x, y,
 		.append('text')
 		.text(xLabel)
 		.attr('x', width/2)
-		.attr('y', height - padding + labelSize*2.4)
+		.attr('y', height - 4)
 		.attr('class', 'scpl-axis__title scpl-axis__title--x');
 
 	const circles = circleLayer
@@ -252,13 +256,29 @@ const plot = (input, x, y,
 		.attr('y', d => yScale(getY(d)) -radiusScale(getR(d)) - 4)
 		.attr('class', 'scpl-label')
 		.attr('data-id', getId)
-		.text(d => getLabel(d));
+		.text(getLabel);
 
 	if(fitLine) {
 
 		const bestFit = leastSquares(data.map(getX), data.map(getY));
-		const p1 = [d3.min(data.map(getX)), bestFit(d3.min(data.map(getX)))];
-		const p2 = [d3.max(data.map(getX)), bestFit(d3.max(data.map(getX)))];
+
+		const yMax = d3.max(yExtentArr);
+		const yMin = d3.min(yExtentArr);
+
+		let p1 = [d3.min(data.map(getX)), bestFit.forward(d3.min(data.map(getX)))];
+		let p2 = [d3.max(data.map(getX)), bestFit.forward(d3.max(data.map(getX)))];
+
+		if(p1[1] > yMax) {
+			p1 = [ bestFit.invert( yMax ), yMax ];
+		} else if(p1[1] < yMin) {
+			p1 = [ bestFit.invert( yMin ), yMin ];
+		}
+
+		if(p2[1] > yMax) {
+			p2 = [ bestFit.invert( yMax ), yMax ];
+		} else if(p1[1] < yMin) {
+			p2 = [ bestFit.invert( yMin ), yMin ];
+		}
 
 		const lineOf = svg
 			.append('line')
@@ -282,11 +302,9 @@ const plot = (input, x, y,
 		const voronoiGen = d3.voronoi()
 			.x(d => xScale(getX(d)))
 			.y(d => yScale(getY(d)))
-			.extent([[ padding, padding ], [ width - padding, height - padding ]]);
+			.extent([[ padding.left, padding.top ], [ width - padding.right, height - padding.bottom ]]);
 
 		const voronoiCells = voronoiGen(data).polygons();
-
-		console.log(voronoiCells);
 
 		const voronoiLayer = svg
 			.append('g')
@@ -307,8 +325,8 @@ const plot = (input, x, y,
 
 		const titleText = svg
 			.append('text')
-			.attr('x', width/2)
-			.attr('y', padding - labelSize - 8)
+			.attr('x', padding.left + (width - padding.left - padding.right)/2)
+			.attr('y', padding.top - labelSize - 8)
 			.attr('class', `scpl-title ${classTitle}`);
 
 		const lines = title.split('\n');
@@ -317,7 +335,7 @@ const plot = (input, x, y,
 			.data(lines.map(l => l.trim()))
 			.enter()
 			.append('tspan')
-			.attr('x', width/2)
+			.attr('x', padding.left + (width - padding.left - padding.right)/2)
 			.attr('dy', (d, i) => i*labelSize)
 			.text(line => line);
 	}
