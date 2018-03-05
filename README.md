@@ -3,7 +3,7 @@
 ## Installation
 
 ```
-npm install guardian/interactive-scatterplots
+npm install interactive-scatterplots
 ```
 
 ## API
@@ -26,7 +26,7 @@ The `options` object can be used to set a number of options. Wherever functions 
 
 * `width`
 * `height`
-* `padding` padding around the chart's grid to fit axis labels and chart title
+* `padding` padding around the chart's grid to fit axis labels and chart title. Object with `top`, `right`, `bottom` and `left` properties
 * `title` the chart's title
 * `labelSize` the font size to use for axis labels
 * `r` the (constant) radius for each circle
