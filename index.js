@@ -27,11 +27,15 @@ const pearson = (xVals, yVals) => {
 }
 
 const leastSquares = (xVals, yVals) => {
-	return x => {
-		const b = pearson(xVals, yVals)*sd(yVals)/sd(xVals)
-		const a = mean(yVals) - b*mean(xVals)
-		return a + b*x
+	
+	const b = pearson(xVals, yVals)*sd(yVals)/sd(xVals)
+	const a = mean(yVals) - b*mean(xVals)
+
+	return {
+		forward : x => a + b*x,  
+		invert : y => (y - a)/b
 	}
+	
 }
 
 const uniformColour = row => ''
@@ -75,7 +79,7 @@ const niceExtent = data => {
 }
 
 const quarterStops = extent => {
-	return [0.25, 0.5, 0.75].map(i => extent[0] + i*(extent[1]-extent[0]))
+	return [0.25, 0.5, 0.75].map(i => round(extent[0] + i*(extent[1]-extent[0]), 5))
 }
 
 const plot = (input, x, y,
@@ -129,8 +133,6 @@ const plot = (input, x, y,
 
 	const styles = styleCircles
 
-	console.log('Padding', padding)
-
 	const xScale = d3.scaleLinear()
 		.domain(xExtentArr)
 		.range([padding.left, width-padding.right])
@@ -183,9 +185,9 @@ const plot = (input, x, y,
 		.append('text')
 		.text(yLabel)
 		.attr('x', yLabelRight ? width - 20 : 20 )
-		.attr('y', height/2)
+		.attr('y', padding.top + (height - padding.top - padding.bottom)/2)
 		.attr('class', 'scpl-axis__title scpl-axis__title--y')
-		.attr('transform', `rotate(270, ${ yLabelRight ? width - 20 : 20 }, ${ width/2 })`)
+		.attr('transform', `rotate(270, ${ yLabelRight ? width - 20 : 20 }, ${ padding.top + (height - padding.top - padding.bottom)/2 })`)
 
 	const xLines = axisGroup
 		.selectAll(`scpl-line--x`)
@@ -253,13 +255,29 @@ const plot = (input, x, y,
 		.attr('y', d => yScale(getY(d)) -radiusScale(getR(d)) - 4)
 		.attr('class', 'scpl-label')
 		.attr('data-id', getId)
-		.text(d => getLabel(d))
+		.text(getLabel)
 
 	if(fitLine) {
 
 		const bestFit = leastSquares(data.map(getX), data.map(getY))
-		const p1 = [d3.min(data.map(getX)), bestFit(d3.min(data.map(getX)))]
-		const p2 = [d3.max(data.map(getX)), bestFit(d3.max(data.map(getX)))]
+
+		const yMax = d3.max(yExtentArr)
+		const yMin = d3.min(yExtentArr)
+
+		let p1 = [d3.min(data.map(getX)), bestFit.forward(d3.min(data.map(getX)))]
+		let p2 = [d3.max(data.map(getX)), bestFit.forward(d3.max(data.map(getX)))]
+
+		if(p1[1] > yMax) {
+			p1 = [ bestFit.invert( yMax ), yMax ]
+		} else if(p1[1] < yMin) {
+			p1 = [ bestFit.invert( yMin ), yMin ]
+		}
+
+		if(p2[1] > yMax) {
+			p2 = [ bestFit.invert( yMax ), yMax ]
+		} else if(p1[1] < yMin) {
+			p2 = [ bestFit.invert( yMin ), yMin ]
+		}
 
 		const lineOf = svg
 			.append('line')
@@ -306,7 +324,7 @@ const plot = (input, x, y,
 
 		const titleText = svg
 			.append('text')
-			.attr('x', width/2)
+			.attr('x', padding.left + (width - padding.left - padding.right)/2)
 			.attr('y', padding.top - labelSize - 8)
 			.attr('class', `scpl-title ${classTitle}`)
 
@@ -316,7 +334,7 @@ const plot = (input, x, y,
 			.data(lines.map(l => l.trim()))
 			.enter()
 			.append('tspan')
-			.attr('x', width/2)
+			.attr('x', padding.left + (width - padding.left - padding.right)/2)
 			.attr('dy', (d, i) => i*labelSize)
 			.text(line => line)
 	}
