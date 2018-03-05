@@ -1,7 +1,12 @@
 'use strict';
 
-var d3 = require('d3');
 var jsdom = require('jsdom');
+var d3Array = require('d3-array');
+var d3Scale = require('d3-scale');
+var d3Selection = require('d3-selection');
+var d3Voronoi = require('d3-voronoi');
+
+const d3 = Object.assign({}, d3Array, d3Scale, d3Selection, d3Voronoi);
 
 const DEFAULT_CIRCLE_SIZE = 6;
 
@@ -33,7 +38,26 @@ const leastSquares = (xVals, yVals) => {
 const uniformColour = row => '';
 const uniformSize = radius => 1; // or literally any other number
 
-const round = (n, down = true) => {
+const round = (value, exp) => {
+	if (typeof exp === 'undefined' || +exp === 0)
+		return Math.round(value)
+
+	value = +value;
+	exp = +exp;
+
+	if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
+		return NaN
+
+	// Shift
+	value = value.toString().split('e');
+	value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
+
+	// Shift back
+	value = value.toString().split('e');
+	return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp))
+};
+
+const niceify = (n, down = true) => {
 	if(n === 0) return 0
 
 	const a = Math.abs(n);
@@ -47,12 +71,12 @@ const round = (n, down = true) => {
 };
 
 const niceExtent = data => {
-	const [min$$1, max$$1] = d3.extent(data);
-	return [round(min$$1), round(max$$1, false)]
+	const [min, max] = d3.extent(data);
+	return [niceify(min), niceify(max, false)]
 };
 
-const quarterStops = extent$$1 => {
-	return [0.25, 0.5, 0.75].map(i => extent$$1[0] + i*(extent$$1[1]-extent$$1[0]))
+const quarterStops = extent => {
+	return [0.25, 0.5, 0.75].map(i => extent[0] + i*(extent[1]-extent[0]))
 };
 
 const plot = (input, x, y,
@@ -65,22 +89,24 @@ const plot = (input, x, y,
 	yExtent = niceExtent,
 	xStops = quarterStops,
 	yStops = quarterStops,
-	xFormat = d => d,
+	xFormat = d => round(d, 3),
 	yStopsInset = false,
 	xLabel = 'x axis',
-	yFormat = d => d,
+	yFormat = d => round(d, 3),
 	yLabel = 'y axis',
+	yLabelRight = false,
 	fitLine = false,
 	classCircles = uniformColour,
 	styleCircles = () => {},
 	id = 'name',
 	width = 400,
 	height = 400,
-	padding = 32,
+	padding = 40,
 	title = '',
 	classTitle = '',
 	labelSize = 13,
-	label = () => null
+	label = () => null,
+	voronoi = false
 
 } = {}) => {
 
@@ -95,7 +121,7 @@ const plot = (input, x, y,
 
 	const getCircleClass = (typeof classCircles === 'function') ? classCircles : row => classCircles;
 
-	const data = input.filter(row => !isNaN(getX(row)) && !isNaN(getY(row)));
+	const data = input.filter(row => !isNaN(getX(row)) && !isNaN(getY(row)) && !isNaN(getR(row)));
 
 	const xExtentArr = (typeof xExtent === 'function') ? xExtent(data.map(getX)) : xExtent;
 	const yExtentArr = (typeof yExtent === 'function') ? yExtent(data.map(getY)) : yExtent;
@@ -104,23 +130,17 @@ const plot = (input, x, y,
 
 	const styles = styleCircles;
 
-	const paddingBottom = padding + labelSize + 4;
-
 	const xScale = d3.scaleLinear()
 		.domain(xExtentArr)
 		.range([padding, width-padding]);
 
 	const yScale = d3.scaleLinear()
 		.domain(yExtentArr)
-		.range([height-paddingBottom, padding]);
+		.range([height-padding, padding]);
 
 	const radiusScale = d3.scaleSqrt()
 		.domain([0, d3.max(data.map(getR))])
 		.range([0, r]);
-
-	const bestFit = leastSquares(data.map(getX), data.map(getY));
-	const p1 = [d3.min(data.map(getX)), bestFit(d3.min(data.map(getX)))];
-	const p2 = [d3.max(data.map(getX)), bestFit(d3.max(data.map(getX)))];
 
 	const axisGroup = svg
 		.append('g')
@@ -158,6 +178,14 @@ const plot = (input, x, y,
 		.style('font-size', labelSize + 'px')
 		.text(yFormat);
 
+	const yAxisTitle = axisLabelGroup
+		.append('text')
+		.text(yLabel)
+		.attr('x', yLabelRight ? width - padding + labelSize*1.8 : padding - labelSize*1.8)
+		.attr('y', height/2)
+		.attr('class', 'scpl-axis__title scpl-axis__title--y')
+		.attr('transform', `rotate(270, ${ yLabelRight ? width - padding + labelSize*1.8 : padding - labelSize*1.8 }, ${ width/2 })`);
+
 	const xLines = axisGroup
 		.selectAll(`scpl-line--x`)
 		.data(xStopsArr)
@@ -166,7 +194,7 @@ const plot = (input, x, y,
 		.attr('x1', xScale)
 		.attr('x2', xScale)
 		.attr('y1', padding)
-		.attr('y2', height-paddingBottom)
+		.attr('y2', height-padding)
 		.attr('class', `scpl-gridline scpl-line--x`);
 
 	const xLineLabels = axisLabelGroup
@@ -175,10 +203,17 @@ const plot = (input, x, y,
 		.enter()
 		.append('text')
 		.attr('x', xScale)
-		.attr('y', height - paddingBottom + labelSize)
+		.attr('y', height - padding + labelSize)
 		.attr('class', `scpl-axis__label ` + `scpl-axis__label--x`)
 		.style('font-size', labelSize + 'px')
 		.text(xFormat);
+
+	const xAxisTitle = axisLabelGroup
+		.append('text')
+		.text(xLabel)
+		.attr('x', width/2)
+		.attr('y', height - padding + labelSize*2.4)
+		.attr('class', 'scpl-axis__title scpl-axis__title--x');
 
 	const circles = circleLayer
 		.selectAll(`.scpl-circle`)
@@ -219,7 +254,11 @@ const plot = (input, x, y,
 		.attr('data-id', getId)
 		.text(d => getLabel(d));
 
-	if(fitLine){
+	if(fitLine) {
+
+		const bestFit = leastSquares(data.map(getX), data.map(getY));
+		const p1 = [d3.min(data.map(getX)), bestFit(d3.min(data.map(getX)))];
+		const p2 = [d3.max(data.map(getX)), bestFit(d3.max(data.map(getX)))];
 
 		const lineOf = svg
 			.append('line')
@@ -228,6 +267,39 @@ const plot = (input, x, y,
 			.attr('x2', xScale(p2[0]))
 			.attr('y2', yScale(p2[1]))
 			.attr('class', `scpl-best-fit`);
+
+		const rSquared = svg
+			.append('text')
+			.attr('x', xScale(p2[0]))
+			.attr('y', yScale(p2[1]) - 4)
+			.text(`r²: ${round(pearson(data.map(getX), data.map(getY))**2, 2)}`)
+			.attr('class', 'scpl-r-squared');
+
+	}
+
+	if(voronoi) {
+
+		const voronoiGen = d3.voronoi()
+			.x(d => xScale(getX(d)))
+			.y(d => yScale(getY(d)))
+			.extent([[ padding, padding ], [ width - padding, height - padding ]]);
+
+		const voronoiCells = voronoiGen(data).polygons();
+
+		console.log(voronoiCells);
+
+		const voronoiLayer = svg
+			.append('g')
+			.attr('class', 'scpl-voronois');
+
+		const voronoiPolygons = voronoiLayer
+			.selectAll('.scpl-voronoi')
+			.data(voronoiCells.filter(d => d))
+			.enter()
+			.append('path')
+			.attr('d', cell => "M" + cell.join("L") + "Z")
+			.attr('class', 'scpl-voronoi')
+			.attr('data-id', d => getId(d.data));
 
 	}
 

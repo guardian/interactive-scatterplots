@@ -29,3 +29,11 @@
 
 .sclp-axis__label--y.scpl-axis__label--y--inset {
   text-anchor: start; }
+
+.scpl-axis__title {
+  text-anchor: middle; }
+
+.scpl-voronoi {
+  fill: none;
+  stroke: none;
+  pointer-events: all; }
