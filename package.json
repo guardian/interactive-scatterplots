@@ -1,13 +1,13 @@
 {
   "name": "interactive-scatterplots",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0",
+  "description": "Generate SVG scatterplots from tabular data, server-side",
   "main": "dist/scatter.js",
   "scripts": {
     "compile": "rollup index.js --format cjs --output dist/scatter.js; node-sass scss/defaults.scss dist/scatter.css"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Niko Kommenda",
+  "license": "MIT",
   "dependencies": {
     "d3-array": "^1.2.1",
     "d3-scale": "^2.0.0",
@@ -18,8 +18,6 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
-    "harp": "^0.24.0",
-    "jade": "^1.11.0",
     "node-sass": "^4.5.3",
     "rollup": "^0.41.6",
     "rollup-plugin-node-resolve": "^3.0.0"
