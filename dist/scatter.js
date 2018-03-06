@@ -121,7 +121,7 @@ const plot = (input, x, y,
 	const getY = (typeof y === 'function') ? y : row => parseFloat(row[y]);
 	const getR = (typeof rScale === 'function') ? rScale : row => parseFloat(row[rScale]);
 	const getId = (typeof id === 'function') ? id : row => row[id];
-	const getLabel = label;
+	const getLabel = (typeof label === 'function') ? label : row => row[label];
 
 	const getCircleClass = (typeof classCircles === 'function') ? classCircles : row => classCircles;
 
@@ -188,6 +188,7 @@ const plot = (input, x, y,
 		.attr('x', yLabelRight ? width - 20 : 20 )
 		.attr('y', padding.top + (height - padding.top - padding.bottom)/2)
 		.attr('class', 'scpl-axis__title scpl-axis__title--y')
+		.style('font-size', labelSize + 'px')
 		.attr('transform', `rotate(270, ${ yLabelRight ? width - 20 : 20 }, ${ padding.top + (height - padding.top - padding.bottom)/2 })`);
 
 	const xLines = axisGroup
@@ -217,6 +218,7 @@ const plot = (input, x, y,
 		.text(xLabel)
 		.attr('x', width/2)
 		.attr('y', height - 4)
+		.style('font-size', labelSize + 'px')
 		.attr('class', 'scpl-axis__title scpl-axis__title--x');
 
 	const circles = circleLayer
