@@ -1,5 +1,7 @@
 # interactive-scatterplots
 
+![Diamond prices example](docs/assets/diamonds.png?raw=true)
+
 ## Installation
 
 ```
