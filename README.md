@@ -1,6 +1,6 @@
 # interactive-scatterplots
 
-![Diamond prices example](docs/assets/diamonds.png?raw=true)
+![Diamond prices example](https://raw.githubusercontent.com/guardian/interactive-scatterplots/master/docs/assets/diamonds.png)
 
 ## Installation
 
