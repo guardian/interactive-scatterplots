@@ -33,9 +33,10 @@ The `options` object can be used to set a number of options. Wherever functions 
 * `r` the (constant) radius for each circle
 * `rScale` a column name string or function to dynamically scale circle radii between 0 and `r` instead
 * `id` a column name string or function to use as `data-id` property on each circle, associated label and voronoi polygon
-* `xExtent`/`yExtent` the extent of the chart in either dimension
+* `xExtent`/`yExtent` the extent (data domain) of the chart in either dimension
 * `xStops`/`yStops` the values at which to draw grid lines in the background
 * `xLabel`/`yLabel` the labels describing the two axes
+* `yLabelRight` whether to move the y axis' title to the right hand side of the chart
 * `classCircles` a function returning a class string for each circle
 * `styleCircles` a function returning a CSS properties object for each circle
 * `label` a function returning a circle's label string, or `null` if it shouldn't be labelled
