@@ -1,6 +1,6 @@
 {
   "name": "interactive-scatterplots",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Generate SVG scatterplots from tabular data, server-side",
   "main": "dist/scatter.js",
   "scripts": {
