@@ -179,7 +179,6 @@ const plot = (input, x, y,
 		.attr('x', yStopsInset ? padding.left : padding.left - 4)
 		.attr('y', d => yStopsInset ? yScale(d) - 4 : yScale(d) + Math.ceil(labelSize/3))
 		.attr('class', `scpl-axis__label scpl-axis__label--y` + (yStopsInset ? `scpl-axis__label--y--inset` : ''))
-		.style('font-size', labelSize + 'px')
 		.text(yFormat);
 
 	const yAxisTitle = axisLabelGroup
@@ -188,7 +187,6 @@ const plot = (input, x, y,
 		.attr('x', yLabelRight ? width - 20 : 20 )
 		.attr('y', padding.top + (height - padding.top - padding.bottom)/2)
 		.attr('class', 'scpl-axis__title scpl-axis__title--y')
-		.style('font-size', labelSize + 'px')
 		.attr('transform', `rotate(270, ${ yLabelRight ? width - 20 : 20 }, ${ padding.top + (height - padding.top - padding.bottom)/2 })`);
 
 	const xLines = axisGroup
@@ -210,7 +208,6 @@ const plot = (input, x, y,
 		.attr('x', xScale)
 		.attr('y', height - padding.bottom + labelSize)
 		.attr('class', `scpl-axis__label ` + `scpl-axis__label--x`)
-		.style('font-size', labelSize + 'px')
 		.text(xFormat);
 
 	const xAxisTitle = axisLabelGroup
@@ -218,7 +215,6 @@ const plot = (input, x, y,
 		.text(xLabel)
 		.attr('x', width/2)
 		.attr('y', height - 4)
-		.style('font-size', labelSize + 'px')
 		.attr('class', 'scpl-axis__title scpl-axis__title--x');
 
 	const circles = circleLayer
